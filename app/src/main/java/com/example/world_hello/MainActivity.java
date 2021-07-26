@@ -94,8 +94,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void Notify() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground )
-                .setContentTitle("GOAT_FUCKAGE")
-                .setContentText("YOUR GOAT HAS BEEN FUCKED")
+                .setContentTitle("WORLD_HELLO")
+                .setContentText("NOTIFICATION GENERATOR DEMO")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(NOTIFY_ID, builder.build());
