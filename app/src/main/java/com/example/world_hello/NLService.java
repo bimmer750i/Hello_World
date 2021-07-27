@@ -53,7 +53,7 @@ public class NLService extends NotificationListenerService {
         Bundle extras = sbn.getNotification().extras;
         long time = sbn.getPostTime();
         Date date = new Date(time);
-        SimpleDateFormat format = new SimpleDateFormat("d-MMM-YYYY HH:m:s");
+        SimpleDateFormat format = new SimpleDateFormat("d-MMM-YYYY HH:mm:s");
 
         String title = "";
         String text = "";
@@ -81,7 +81,6 @@ public class NLService extends NotificationListenerService {
     public void onNotificationRemoved(StatusBarNotification sbn) {
         Intent i = new  Intent("com.example.world_hello.NOTIFICATION_LISTENER_EXAMPLE");
         i.putExtra("removed",sbn.getPackageName());
-
         sendBroadcast(i);
     }
 
@@ -89,6 +88,7 @@ public class NLService extends NotificationListenerService {
         try {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(openFileOutput(FILENAME, MODE_APPEND)));
             bw.write(s);
+            bw.write("\n");
             bw.close();
             Log.d("Ыщ", "Notification info saved");
         } catch (FileNotFoundException e) {
