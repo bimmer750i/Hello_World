@@ -12,11 +12,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 
 public class MainActivity extends Activity implements View.OnClickListener {
@@ -34,13 +40,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Intent intent=new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        txtView = (TextView) findViewById(R.id.textView);
         nReceiver = new NotificationReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.example.world_hello.NOTIFICATION_LISTENER_EXAMPLE");
         registerReceiver(nReceiver,filter);
+
 
     }
 
@@ -57,14 +64,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Notify();
         }
         else if(v.getId() == R.id.btnClearNotify){
-            Intent i = new Intent("com.example.world_hello.NOTIFICATION_LISTENER_SERVICE_EXAMPLE");
-            i.putExtra("command","clearall");
-            sendBroadcast(i);
-        }
-        else if(v.getId() == R.id.btnListNotify){
-            Intent i = new Intent("com.example.world_hello.NOTIFICATION_LISTENER_SERVICE_EXAMPLE");
-            i.putExtra("command","list");
-            sendBroadcast(i);
+            Cancel();
         }
     }
 
@@ -72,8 +72,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            String temp = intent.getStringExtra("notification_event") + "n" + txtView.getText();
-            txtView.setText(temp);
+
         }
     }
 
@@ -101,5 +100,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         notificationManager.notify(NOTIFY_ID, builder.build());
         NOTIFY_ID++;
     }
+    private void Cancel() {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancelAll();
+    }
+
 
 }
