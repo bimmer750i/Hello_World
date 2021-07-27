@@ -90,6 +90,7 @@ public class NLService extends NotificationListenerService {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(openFileOutput(FILENAME, MODE_APPEND)));
             bw.write(s);
             bw.close();
+            Log.d("Ыщ", "Notification info saved");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
