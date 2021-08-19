@@ -36,17 +36,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Intent intent=new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         nReceiver = new NotificationReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.example.world_hello.NOTIFICATION_LISTENER_EXAMPLE");
         registerReceiver(nReceiver,filter);
+        Intent intent=new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
 
 
     }
@@ -105,3 +103,5 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 
 }
+
+

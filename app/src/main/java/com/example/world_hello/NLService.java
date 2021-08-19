@@ -6,11 +6,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +43,11 @@ public class NLService extends NotificationListenerService {
     }
 
     @Override
+    public IBinder onBind(Intent intent) {
+        return super.onBind(intent);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         unregisterReceiver(nlservicereciver);
@@ -54,9 +62,12 @@ public class NLService extends NotificationListenerService {
         long time = sbn.getPostTime();
         Date date = new Date(time);
         SimpleDateFormat format = new SimpleDateFormat("d-MMM-YYYY HH:mm:s");
+        final DatabaseHelper helper = new DatabaseHelper(this);
 
         String title = "";
         String text = "";
+
+
 
 
         if (extras.containsKey("android.title")) {
@@ -68,12 +79,9 @@ public class NLService extends NotificationListenerService {
                 text = extras.getCharSequence("android.text").toString();
             }
         }
+        helper.insert(title, text);
+        Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT);
 
-        if (title != null && text!=null) {
-            String s = "App: " + title + " Text: " + text + " Time: " + format.format(date);
-            Log.i("Title", s);
-            writeFile(s);
-        }
 
     }
 
