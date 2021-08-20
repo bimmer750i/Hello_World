@@ -10,11 +10,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -34,6 +36,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private static int NOTIFY_ID = 0;
     private static final String CHANNEL_ID = "CHANNEL_ID";
 
+    SQLiteDatabase db;
+
 
 
     @Override
@@ -42,10 +46,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
         nReceiver = new NotificationReceiver();
         IntentFilter filter = new IntentFilter();
-        filter.addAction("com.example.world_hello.NOTIFICATION_LISTENER_EXAMPLE");
+        filter.addAction("posted");
         registerReceiver(nReceiver,filter);
-        Intent intent=new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-
 
     }
 
@@ -61,16 +63,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
         if(v.getId() == R.id.btnCreateNotify){
             Notify();
         }
-        else if(v.getId() == R.id.btnClearNotify){
-            Cancel();
-        }
     }
 
     class NotificationReceiver extends BroadcastReceiver{
 
+        final DatabaseHelper helper = new DatabaseHelper(getApplicationContext());
+
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            String date = intent.getStringExtra("Time");
+            String title = intent.getStringExtra("Title");
+            String text = intent.getStringExtra("Text");
+            Toast.makeText(getApplicationContext(),date + " " + title, Toast.LENGTH_SHORT).show();
+            helper.insert(date, title, text);
         }
     }
 
@@ -94,12 +99,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(NOTIFY_ID, builder.build());
+        notificationManager.cancel(NOTIFY_ID);
         NOTIFY_ID++;
     }
-    private void Cancel() {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancelAll();
-    }
+
 
 
 }

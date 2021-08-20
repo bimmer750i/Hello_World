@@ -2,6 +2,7 @@
 
 package com.example.world_hello;
 
+import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,14 +33,11 @@ import java.util.Date;
 public class NLService extends NotificationListenerService {
     final String FILENAME = "file";
     private String TAG = this.getClass().getSimpleName();
-    private NLServiceReceiver nlservicereciver;
     @Override
     public void onCreate() {
         super.onCreate();
-        nlservicereciver = new NLServiceReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction("com.example.world_hello.NOTIFICATION_LISTENER_SERVICE_EXAMPLE");
-        registerReceiver(nlservicereciver,filter);
     }
 
     @Override
@@ -50,39 +48,28 @@ public class NLService extends NotificationListenerService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(nlservicereciver);
     }
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        String pack = sbn.getPackageName();
-        String ticker = (String) sbn.getNotification().tickerText;
-        Bundle extras = sbn.getNotification().extras;
+
         long time = sbn.getPostTime();
         Date date = new Date(time);
         SimpleDateFormat format = new SimpleDateFormat("d-MMM-YYYY HH:mm:s");
         final DatabaseHelper helper = new DatabaseHelper(this);
+        String date_string = format.format(date);
 
-        String title = "";
-        String text = "";
-
-
-
-
-        if (extras.containsKey("android.title")) {
-            title = extras.getString("android.title");
-        }
-
-        if (extras.containsKey("android.text")) {
-            if (extras.getCharSequence("android.text") != null) {
-                text = extras.getCharSequence("android.text").toString();
-            }
-        }
-        helper.insert(title, text);
-        Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT);
+        String title = sbn.getNotification().extras.getString("android.title");
+        String text = sbn.getNotification().extras.getString("android.text");
 
 
+        Intent intent = new Intent("posted");
+        intent.putExtra("Time", date_string);
+        intent.putExtra("Title", title);
+        intent.putExtra("Text", text);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -92,43 +79,8 @@ public class NLService extends NotificationListenerService {
         sendBroadcast(i);
     }
 
-    void writeFile(String s) {
-        try {
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(openFileOutput(FILENAME, MODE_APPEND)));
-            bw.write(s);
-            bw.write("\n");
-            bw.close();
-            Log.d("Ыщ", "Notification info saved");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    class NLServiceReceiver extends BroadcastReceiver{
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if(intent.getStringExtra("command").equals("clearall")){
-                NLService.this.cancelAllNotifications();
-            }
-            else if(intent.getStringExtra("command").equals("list")){
-                Intent i1 = new  Intent("com.example.world_hello.NOTIFICATION_LISTENER_EXAMPLE");
-                sendBroadcast(i1);
-                int i=1;
-                for (StatusBarNotification sbn : NLService.this.getActiveNotifications()) {
-                    Intent i2 = new  Intent("com.example.world_hello.NOTIFICATION_LISTENER_EXAMPLE");
-                    i2.putExtra("notification_event",i +" " + sbn.getNotification().tickerText + "n");
-                    sendBroadcast(i2);
-                    i++;
-                }
-                Intent i3 = new  Intent("com.example.world_hello.NOTIFICATION_LISTENER_EXAMPLE");
-                sendBroadcast(i3);
 
-            }
-
-        }
-    }
 
 }
